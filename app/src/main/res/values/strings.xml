@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Pencatat Keuangan</string>
+
+    <string-array name="jenis_transaksi">
+        <item>Pemasukan</item>
+        <item>Pengeluaran</item>
+    </string-array>
+</resources>

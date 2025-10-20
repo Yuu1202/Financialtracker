@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pencatat Keuangan"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Input Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#F0F0F0"
+        android:layout_marginBottom="16dp">
+
+        <Spinner
+            android:id="@+id/spn_jenis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/jenis_transaksi"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/et_jumlah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Jumlah"
+            android:inputType="numberDecimal"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/et_keterangan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Keterangan (opsional)"
+            android:inputType="text"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btn_tambah"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tambah Transaksi"
+            android:backgroundTint="#4CAF50" />
+    </LinearLayout>
+
+    <!-- Summary Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="#E8F5E9">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pemasukan"
+                android:textSize="12sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tv_total_pemasukan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rp 0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#2E7D32"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="#FFEBEE">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pengeluaran"
+                android:textSize="12sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tv_total_pengeluaran"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rp 0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#C62828"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="#E3F2FD">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Saldo"
+                android:textSize="12sp"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tv_saldo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rp 0"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#1565C0"
+                android:gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_transaksi"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/btn_hapus_semua"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hapus Semua Transaksi"
+        android:backgroundTint="#F44336" />
+</LinearLayout>
