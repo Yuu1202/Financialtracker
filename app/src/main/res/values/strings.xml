@@ -1,5 +1,23 @@
 <resources>
     <string name="app_name">Pencatat Keuangan</string>
+    <string name="total_saldo">Total Saldo</string>
+    <string name="pemasukan">Pemasukan</string>
+    <string name="pengeluaran">Pengeluaran</string>
+    <string name="transaksi_terbaru">Transaksi Terbaru</string>
+    <string name="home">Home</string>
+    <string name="riwayat">Riwayat</string>
+    <string name="ringkasan">Ringkasan</string>
+    <string name="total_pemasukan">Total Pemasukan</string>
+    <string name="total_pengeluaran">Total Pengeluaran</string>
+    <string name="total_transaksi">Total Transaksi</string>
+    <string name="semua">Semua</string>
+    <string name="keterangan">Keterangan</string>
+    <string name="jumlah">Jumlah (Rp)</string>
+    <string name="simpan">Simpan</string>
+    <string name="hapus">Hapus</string>
+    <string name="batal">Batal</string>
+    <string name="hapus_transaksi">Hapus Transaksi</string>
+    <string name="konfirmasi_hapus">Yakin ingin menghapus transaksi ini?</string>
 
     <string-array name="jenis_transaksi">
         <item>Pemasukan</item>

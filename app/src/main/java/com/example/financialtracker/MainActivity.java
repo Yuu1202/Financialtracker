@@ -1,123 +1,122 @@
 package com.example.financialtracker;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
-
-    private EditText etJumlah, etKeterangan;
-    private Spinner spnJenis;
-    private Button btnTambah, btnHapusSemua;
-    private TextView tvTotalPemasukan, tvTotalPengeluaran, tvSaldo;
+    private TextView tvTotalSaldo, tvPemasukanAmount, tvPengeluaranAmount;
+    private CardView btnPemasukan, btnPengeluaran;
     private RecyclerView rvTransaksi;
     private TransaksiAdapter adapter;
-    private List<Transaksi> daftarTransaksi;
+    private BottomNavigationView bottomNav;
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Inisialisasi views
-        etJumlah = findViewById(R.id.et_jumlah);
-        etKeterangan = findViewById(R.id.et_keterangan);
-        spnJenis = findViewById(R.id.spn_jenis);
-        btnTambah = findViewById(R.id.btn_tambah);
-        btnHapusSemua = findViewById(R.id.btn_hapus_semua);
-        tvTotalPemasukan = findViewById(R.id.tv_total_pemasukan);
-        tvTotalPengeluaran = findViewById(R.id.tv_total_pengeluaran);
-        tvSaldo = findViewById(R.id.tv_saldo);
-        rvTransaksi = findViewById(R.id.rv_transaksi);
+        db = new DatabaseHelper(this);
+        initViews();
+        setupBottomNavigation();
+        loadData();
+        setupClickListeners();
+    }
 
-        // Setup RecyclerView
-        daftarTransaksi = new ArrayList<>();
-        adapter = new TransaksiAdapter(daftarTransaksi, this::hapusTransaksi);
+    private void initViews() {
+        tvTotalSaldo = findViewById(R.id.tvTotalSaldo);
+        tvPemasukanAmount = findViewById(R.id.tvPemasukanAmount);
+        tvPengeluaranAmount = findViewById(R.id.tvPengeluaranAmount);
+        btnPemasukan = findViewById(R.id.btnPemasukan);
+        btnPengeluaran = findViewById(R.id.btnPengeluaran);
+        rvTransaksi = findViewById(R.id.rvTransaksi);
+        bottomNav = findViewById(R.id.bottomNavigation);
+
         rvTransaksi.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new TransaksiAdapter(new ArrayList<>(), false);
         rvTransaksi.setAdapter(adapter);
-
-        // Event listener tombol tambah
-        btnTambah.setOnClickListener(v -> tambahTransaksi());
-
-        // Event listener tombol hapus semua
-        btnHapusSemua.setOnClickListener(v -> hapusSemua());
     }
 
-    private void tambahTransaksi() {
-        String jumlahStr = etJumlah.getText().toString().trim();
-        String keterangan = etKeterangan.getText().toString().trim();
-        String jenis = spnJenis.getSelectedItem().toString();
-
-        if (jumlahStr.isEmpty()) {
-            Toast.makeText(this, "Masukkan jumlah", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        try {
-            double jumlah = Double.parseDouble(jumlahStr);
-            if (jumlah <= 0) {
-                Toast.makeText(this, "Jumlah harus lebih dari 0", Toast.LENGTH_SHORT).show();
-                return;
+    private void setupBottomNavigation() {
+        bottomNav.setSelectedItemId(R.id.nav_home);
+        bottomNav.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                return true;
+            } else if (id == R.id.nav_chatbot) {
+                // Chatbot belum tersedia
+                Toast.makeText(this, "Fitur Chatbot segera hadir!", Toast.LENGTH_SHORT).show();
+                return false;
+            } else if (id == R.id.nav_riwayat) {
+                startActivity(new Intent(MainActivity.this, RiwayatActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
             }
-
-            Transaksi transaksi = new Transaksi(jenis, jumlah, keterangan);
-            daftarTransaksi.add(0, transaksi);
-            adapter.notifyItemInserted(0);
-
-            etJumlah.setText("");
-            etKeterangan.setText("");
-
-            hitungTotal();
-            Toast.makeText(this, "Transaksi ditambahkan", Toast.LENGTH_SHORT).show();
-
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Format jumlah tidak valid", Toast.LENGTH_SHORT).show();
-        }
+            return false;
+        });
     }
 
-    private void hapusTransaksi(int posisi) {
-        daftarTransaksi.remove(posisi);
-        adapter.notifyItemRemoved(posisi);
-        hitungTotal();
+    private void setupClickListeners() {
+        btnPemasukan.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TambahTransaksiActivity.class);
+            intent.putExtra("TIPE", "pemasukan");
+            startActivity(intent);
+        });
+
+        btnPengeluaran.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TambahTransaksiActivity.class);
+            intent.putExtra("TIPE", "pengeluaran");
+            startActivity(intent);
+        });
     }
 
-    private void hapusSemua() {
-        if (!daftarTransaksi.isEmpty()) {
-            daftarTransaksi.clear();
-            adapter.notifyDataSetChanged();
-            hitungTotal();
-            Toast.makeText(this, "Semua transaksi dihapus", Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+        bottomNav.setSelectedItemId(R.id.nav_home);
     }
 
-    private void hitungTotal() {
-        double totalPemasukan = 0;
-        double totalPengeluaran = 0;
+    private void loadData() {
+        List<Transaksi> allTransaksi = db.getAllTransaksi();
 
-        for (Transaksi t : daftarTransaksi) {
-            if (t.getJenis().equals("Pemasukan")) {
+        long totalPemasukan = 0;
+        long totalPengeluaran = 0;
+
+        for (Transaksi t : allTransaksi) {
+            if (t.getTipe().equals("pemasukan")) {
                 totalPemasukan += t.getJumlah();
             } else {
                 totalPengeluaran += t.getJumlah();
             }
         }
 
-        double saldo = totalPemasukan - totalPengeluaran;
+        long saldo = totalPemasukan - totalPengeluaran;
 
-        tvTotalPemasukan.setText("Rp " + formatRupiah(totalPemasukan));
-        tvTotalPengeluaran.setText("Rp " + formatRupiah(totalPengeluaran));
-        tvSaldo.setText("Rp " + formatRupiah(saldo));
+        tvTotalSaldo.setText(formatRupiah(saldo));
+        tvPemasukanAmount.setText(formatRupiah(totalPemasukan));
+        tvPengeluaranAmount.setText(formatRupiah(totalPengeluaran));
+
+        // Tampilkan 2 transaksi terbaru
+        List<Transaksi> recentTransaksi = allTransaksi.size() > 2 ?
+                allTransaksi.subList(0, 2) : allTransaksi;
+        adapter.updateData(recentTransaksi);
     }
 
-    private String formatRupiah(double jumlah) {
-        return String.format("%,.0f", jumlah);
+    private String formatRupiah(long amount) {
+        DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        formatter.applyPattern("#,###");
+        return "Rp " + formatter.format(amount).replace(",", ".");
     }
 }

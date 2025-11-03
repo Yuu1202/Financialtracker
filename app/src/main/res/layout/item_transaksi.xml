@@ -1,46 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:background="#FFFFFF"
     android:layout_marginBottom="8dp"
-    android:gravity="center_vertical">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
-        <TextView
-            android:id="@+id/tv_item_jenis"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:textSize="14sp" />
+        <!-- Icon -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            app:cardBackgroundColor="#4CAF50"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp">
 
-        <TextView
-            android:id="@+id/tv_item_keterangan"
-            android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/ivIcon"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center"
+                android:src="@android:drawable/arrow_up_float"
+                app:tint="#FFFFFF" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Info Transaksi -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="#666666" />
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvKeterangan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bonus"
+                android:textColor="#212121"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTanggal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="5/10/2025"
+                android:textColor="#757575"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Jumlah -->
+        <TextView
+            android:id="@+id/tvJumlah"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp"
+            android:text="+Rp 1.000.000"
+            android:textColor="#4CAF50"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Delete Button -->
+        <ImageView
+            android:id="@+id/ivDelete"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:padding="4dp"
+            android:src="@android:drawable/ic_menu_delete"
+            app:tint="#F44336"
+            android:visibility="gone" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_item_jumlah"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="14sp"
-        android:layout_marginEnd="8dp" />
-
-    <Button
-        android:id="@+id/btn_item_hapus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hapus"
-        android:textSize="12sp" />
-</LinearLayout>
+</androidx.cardview.widget.CardView>

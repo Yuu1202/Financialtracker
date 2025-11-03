@@ -20,6 +20,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".RiwayatActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".TambahTransaksiActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
