@@ -2,8 +2,8 @@ package com.example.financialtracker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.CalendarView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,18 +11,22 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 public class RiwayatActivity extends AppCompatActivity {
-    private TextView tvTotalPemasukan, tvTotalPengeluaran, tvTotalTransaksi;
+    private TextView tvTotalPemasukan, tvTotalPengeluaran, tvTotalTransaksi, tvSelectedDate;
+    private CalendarView calendarView;
     private TabLayout tabLayout;
     private RecyclerView rvRiwayat;
     private TransaksiAdapter adapter;
     private BottomNavigationView bottomNav;
     private DatabaseHelper db;
     private String currentFilter = "semua";
+    private String selectedDate = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +34,15 @@ public class RiwayatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_riwayat);
 
         db = new DatabaseHelper(this);
+
+        // Set tanggal hari ini sebagai default
+        Calendar today = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        selectedDate = sdf.format(today.getTime());
+
         initViews();
         setupBottomNavigation();
+        setupCalendar();
         setupTabs();
         loadData();
     }
@@ -40,6 +51,8 @@ public class RiwayatActivity extends AppCompatActivity {
         tvTotalPemasukan = findViewById(R.id.tvTotalPemasukan);
         tvTotalPengeluaran = findViewById(R.id.tvTotalPengeluaran);
         tvTotalTransaksi = findViewById(R.id.tvTotalTransaksi);
+        tvSelectedDate = findViewById(R.id.tvSelectedDate);
+        calendarView = findViewById(R.id.calendarView);
         tabLayout = findViewById(R.id.tabLayout);
         rvRiwayat = findViewById(R.id.rvRiwayat);
         bottomNav = findViewById(R.id.bottomNavigation);
@@ -47,6 +60,22 @@ public class RiwayatActivity extends AppCompatActivity {
         rvRiwayat.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TransaksiAdapter(new ArrayList<>(), true);
         rvRiwayat.setAdapter(adapter);
+
+        // Set tanggal terpilih
+        tvSelectedDate.setText("Transaksi: " + selectedDate);
+    }
+
+    private void setupCalendar() {
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, dayOfMonth);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            selectedDate = sdf.format(calendar.getTime());
+
+            tvSelectedDate.setText("Transaksi: " + selectedDate);
+            loadTransaksi();
+        });
     }
 
     private void setupBottomNavigation() {
@@ -59,9 +88,10 @@ public class RiwayatActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (id == R.id.nav_chatbot) {
-                // Chatbot belum tersedia
-                Toast.makeText(this, "Fitur Chatbot segera hadir!", Toast.LENGTH_SHORT).show();
-                return false;
+                startActivity(new Intent(RiwayatActivity.this, ChatbotActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
             } else if (id == R.id.nav_riwayat) {
                 return true;
             }
@@ -125,12 +155,26 @@ public class RiwayatActivity extends AppCompatActivity {
 
     private void loadTransaksi() {
         List<Transaksi> transaksiList;
+
+        // Ambil semua transaksi sesuai filter
         if (currentFilter.equals("semua")) {
             transaksiList = db.getAllTransaksi();
         } else {
             transaksiList = db.getTransaksiByTipe(currentFilter);
         }
-        adapter.updateData(transaksiList);
+
+        // Filter berdasarkan tanggal yang dipilih
+        List<Transaksi> filteredList = new ArrayList<>();
+        for (Transaksi t : transaksiList) {
+            if (t.getTanggal().equals(selectedDate)) {
+                filteredList.add(t);
+            }
+        }
+
+        adapter.updateData(filteredList);
+
+        // Update info jumlah transaksi pada tanggal terpilih
+        tvSelectedDate.setText("Transaksi: " + selectedDate + " (" + filteredList.size() + " transaksi)");
     }
 
     private String formatRupiah(long amount) {

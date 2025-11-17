@@ -3,7 +3,6 @@ package com.example.financialtracker;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +13,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
     private TextView tvTotalSaldo, tvPemasukanAmount, tvPengeluaranAmount;
     private CardView btnPemasukan, btnPengeluaran;
@@ -55,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.nav_home) {
                 return true;
             } else if (id == R.id.nav_chatbot) {
-                // Chatbot belum tersedia
-                Toast.makeText(this, "Fitur Chatbot segera hadir!", Toast.LENGTH_SHORT).show();
-                return false;
+                startActivity(new Intent(MainActivity.this, ChatbotActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
             } else if (id == R.id.nav_riwayat) {
                 startActivity(new Intent(MainActivity.this, RiwayatActivity.class));
                 overridePendingTransition(0, 0);
@@ -68,17 +68,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        btnPemasukan.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, TambahTransaksiActivity.class);
-            intent.putExtra("TIPE", "pemasukan");
-            startActivity(intent);
-        });
+        btnPemasukan.setOnClickListener(v -> showBottomSheet("pemasukan"));
+        btnPengeluaran.setOnClickListener(v -> showBottomSheet("pengeluaran"));
+    }
 
-        btnPengeluaran.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, TambahTransaksiActivity.class);
-            intent.putExtra("TIPE", "pengeluaran");
-            startActivity(intent);
-        });
+    private void showBottomSheet(String tipe) {
+        BottomSheetTambahTransaksi bottomSheet = BottomSheetTambahTransaksi.newInstance(tipe);
+        bottomSheet.setOnTransaksiAddedListener(() -> loadData());
+        bottomSheet.show(getSupportFragmentManager(), "BottomSheetTambahTransaksi");
     }
 
     @Override
